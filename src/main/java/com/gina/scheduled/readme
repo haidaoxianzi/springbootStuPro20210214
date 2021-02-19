@@ -1,0 +1,53 @@
+一 boot 调度   找到类：ScheduledStu.java
+优点：
+1、有3中定时调度方式，按需选择一种即可
+2、易常不会终止服务，下一次还可以进行调度
+3、使用注解形式，只需要把类注册到spring容器里，在方法上加注解即可使用。
+实现：
+1 必要的jar包导入
+<dependencies>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
+2 在boot入口或者配置类中添加注解：@EnableScheduling
+
+2.1 添加定时任务：[Spring Schedule三种任务调度器]  按你需要选一个就行
+1）Cron表达式
+eg:添加一个work()方法，每10秒执行一次。
+注意：当方法执行时间超过任务调度频率，调度器会在下个周期执行
+假设work()方法在第0秒开始执行，方法执行了12秒，那么下一次执行work()方法的时间是第20秒
+    @Component
+    public class MyTask {
+        @Scheduled(cron = "0/10 * * * * *")
+        public void work() {
+            // task execution logic
+        }
+    }
+
+2）固定间隔任务
+从当前任务执行结束时间到下一次开始执行，时间间隔固定。并周期性调度。
+eg:添加一个work()方法，每隔10秒执行一次。
+例如：假设work()方法在第0秒开始执行,方法执行了12秒，下一次执行work()方法的时间是第22秒。
+    @Scheduled(fixedDelay = 1000*10)
+    public void work() {
+        // task execution logic
+    }
+
+3）固定频率任务
+按照指定频率执行任务，并以此规则开始周期性的执行调度。
+eg:添加一个work()方法，每10秒执行一次。
+注意：当方法的执行时间超过任务调度频率时，调度器会在当前方法执行完成后立即执行下次任务。
+
+例如：假设work()方法在第0秒开始执行，方法执行了12秒，那么下一次执行work()方法的时间是第12秒。
+    @Scheduled(fixedRate = 1000*10)
+    public void work() {
+        // task execution logic
+    }
